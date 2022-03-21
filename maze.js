@@ -28,13 +28,12 @@ class Maze {
         maze.width = this.size;
         maze.height = this.size;
         maze.style.background = "black";
-        current.visited = true;
+        this.grid[0][0].visited = true;
 
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.columns; c++) {
                 let grid = this.grid;
                 grid[r][c].show(this.size, this.rows, this.columns);
-                grid[r][c].visited = true;
             }
         }
     }
@@ -54,6 +53,15 @@ class Cell {
             bottomWall: true,
         }
     }
+
+    // checkNeighbours() { 
+    //     let grid = this.parentGrid;
+    //     let row = this.rowNum;
+    //     let col = this.colNum;
+    //     let neighbours = [];
+
+        
+    // }
 
     drawTopWall(x, y, size, columns) {
         ctx.beginPath();
@@ -79,6 +87,7 @@ class Cell {
         ctx.lineTo(x, y);
         ctx.stroke();
     }
+
     show(size, rows, columns) {
         let x = this.colNum * size / columns;
         let y = this.rowNum * size / rows;
