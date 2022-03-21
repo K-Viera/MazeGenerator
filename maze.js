@@ -64,7 +64,8 @@ class Maze {
         // });
         setTimeout(() => {
             this.draw();
-        }, 100);
+            console.log(100 / Math.pow(this.columns, this.columns));
+        }, 100/Math.pow(this.columns,this.columns));
     }
 }
 
@@ -189,7 +190,3 @@ class Cell {
         }
     }
 }
-
-let newMaze = new Maze(500, 10, 10);
-newMaze.setup();
-newMaze.draw();
