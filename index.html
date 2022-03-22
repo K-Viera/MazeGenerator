@@ -1,16 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="./style.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./style.css" media="screen" />
     <title>Document</title>
 </head>
-<body>
-    <canvas class="maze">
 
+<body>
+    <label>Set canvas size</label>
+    <input type="number" value="500" min="0" id="canvasSize"></input>
+    <label>Set maze size</label>
+    <input type="number" value="10" min="0" id="mazeSize"></input>
+    <button onclick="startMaze()">Start Maze</button>
+    <canvas class="maze">
     </canvas>
     <script src="maze.js"></script>
+    <script>
+        let newMaze;
+        function startMaze() {
+
+            var canvasSize = document.getElementById("canvasSize").value;
+            var mazeSize = document.getElementById("mazeSize").value;
+            if (!newMaze) {
+                newMaze = new Maze(canvasSize, mazeSize, mazeSize);
+                newMaze.setup();
+                newMaze.draw();
+            }
+        }
+    </script>
 </body>
+
 </html>
