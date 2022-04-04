@@ -5,31 +5,195 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="./style.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./css/style.css" media="screen" />
     <title>MazeGenerator</title>
-</head>
+    <script type = "text/javascript" src="./js/paper.js"></script>
+    <script type="text/javascript">
+        paper.install(window);
+        var modoJuego = false;
+        //capas
+        var autoLayer;
 
-<body>
-    <label>Set canvas size</label>
-    <input type="number" value="500" min="0" id="canvasSize"></input>
-    <label>Set maze size</label>
-    <input type="number" value="10" min="0" id="mazeSize"></input>
-    <button onclick="startMaze()">Start Maze</button>
-    <canvas class="maze">
-    </canvas>
-    <script src="maze.js"></script>
-    <script>
+        //Posicion Inicial
+        var autoAngulo0 =0;
+        var autoPosicion0 =0;
+
+        //Variables Auto
+        var auto;
+        var chasis;
+
+        //Movimiento
+        var newX = 0;
+        var newY = 0;
+
+        window.onload = function () {
+            paper.setup('maze');
+            // Inicializar las capas
+            autoLayer = new Layer();
+
+            // A la capa de pista le incluye el objeto pista
+            var tool = new Tool();
+            jugar()
+
+            //Con las flechas se mueve el auto
+            tool.onKeyDown = function (event) {
+                if (!modoJuego) {
+                    return;
+                };
+                if (auto == null) {
+                    //console.log("No Auto")
+                    return;
+                };
+                event.preventDefault();
+                // Se mueve una casilla hacia arriba
+                if (event.key == 'up') {
+                    newY = -40;
+                };
+                // Se mueve una casilla hacia abajo
+                if (event.key == 'down') {
+                    newY = 40;
+                };
+                // Se mueve una casilla hacia la izquierda
+                if (event.key == 'left') {
+                    newX = -40;
+                };
+                // Se mueve una casilla hacia la derecha
+                if (event.key == 'right') {
+                    newX = 40;
+                };
+            };
+
+            // En cada frame
+            view.onFrame = function (event) {
+                if (modoJuego) {
+                    if (auto != null) {
+                        // Se actualiza la ubicacion del auto, segun la velocidad
+                        console.log(auto.position.x)
+                        var xp = auto.position.x + newX;
+                        var yp = auto.position.y + newY;
+                        newX = 0;
+                        newY = 0;
+                        auto.position.x = Math.max(0, Math.min(xp, view.size.width));
+                        auto.position.y = Math.max(0, Math.min(yp, view.size.height));
+
+                    };
+                };
+            }
+        }
+
+        //Metodo para dibujar auto
+        function crearAuto(maze){
+            //console.log("crear Carro")
+            pix=0
+            piy=0
+            sizeX = maze.size / maze.columns
+            sizeY = maze.size / maze.columns
+            autoLayer.clear();
+            auto = new Group();
+
+            chasis = new Path.Rectangle(new Point(pix, piy), new Size(sizeX/2, sizeY/2));
+            chasis.style = {
+                fillColor: 'red',
+                strokeColor: 'black'
+            };
+            auto.addChild(chasis);
+            autoLayer.addChild(auto);
+
+            angulo = (autoAngulo0 + 360) * (Math.PI / 180);
+            //auto.rotate(autoAngulo0 + 180);
+
+            auto.position = new Point(sizeX/2, sizeY/2);;
+
+        }
+
+        function drawMaze(maze){
+            let canvas = document.querySelector('.maze')
+            canvas.width = maze.size;
+            canvas.height = maze.size;
+            // console.log("DrawMAze: ",maze.grid)
+            for (let r = 0; r < maze.rows; r++) {
+                for (let c = 0; c < maze.columns; c++) {
+                    // console.log(maze.grid[r][c])
+                    let x = maze.grid[r][c].colNum * maze.size / maze.columns;
+                    let y = maze.grid[r][c].rowNum * maze.size / maze.rows;
+                    //console.log(maze.size / maze.columns)
+                    if(maze.grid[r][c].walls.topWall){
+                        drawTopWall(x,y,maze.size,maze.columns,maze.rows)
+                    }
+                    if(maze.grid[r][c].walls.bottomWall){
+                        drawBottomWall(x,y,maze.size,maze.columns,maze.rows)
+                    }
+                    if(maze.grid[r][c].walls.leftWall){
+                        drawLeftWall(x,y,maze.size,maze.columns,maze.rows)
+                    }
+                    if(maze.grid[r][c].walls.rightWall){
+                        drawRightWall(x,y,maze.size,maze.columns,maze.rows)
+                    }
+                }
+            }
+        }
+
+        function drawTopWall(x,y,size,columns,rows) {
+            var from = new Point(x,y);
+            var to = new Point(x+size/columns,y);
+            var path = new Path.Line(from,to);
+            path.strokeColor = 'white';
+        }
+
+        function drawBottomWall(x,y,size,columns,rows) {
+            var from = new Point(x+size/columns,y+size/rows);
+            var to = new Point(x,y+size/rows);
+            var path = new Path.Line(from,to);
+            path.strokeColor = 'white';
+        }
+
+        function drawLeftWall(x,y,size,columns,rows) {
+            var from = new Point(x,y+size/rows);
+            var to = new Point(x,y);
+            var path = new Path.Line(from,to);
+            path.strokeColor = 'white';
+        }
+
+        function drawRightWall(x,y,size,columns,rows) {
+            var from = new Point(x+size/columns,y);
+            var to = new Point(x+size/columns,y+size/rows);
+            var path = new Path.Line(from,to);
+            path.strokeColor = 'white';
+        }
+
+        function jugar(){
+            modoJuego = true;
+            startMaze()
+            crearAuto(newMaze)
+            drawMaze(newMaze)
+        }
+
         let newMaze;
         function startMaze() {
-            var canvasSize = document.getElementById("canvasSize").value;
-            var mazeSize = document.getElementById("mazeSize").value;
+            var canvasSize = 800;
+            var mazeSize = document.getElementById('mazeSize').value;
+            //console.log(mazeSize)
             if (!newMaze) {
                 newMaze = new Maze(canvasSize, mazeSize, mazeSize);
                 newMaze.setup();
                 newMaze.draw();
             }
         }
+
     </script>
+</head>
+
+<body style="background-image: url('img/bg.jpg');">
+    <label>Set maze size</label>
+    <input type="number" value="10" min="0" id="mazeSize"></input>
+    <button onclick="jugar()">Start Maze</button>
+    <div style="text-align: center; padding-top: 1cm;">
+        <canvas class="maze" id="maze" resize>
+        </canvas>
+        <canvas hidden class="prueba" id="prueba" resize>
+        </canvas>
+    </div>
+    <script src="./js/maze.js"></script>
 </body>
 
 </html>

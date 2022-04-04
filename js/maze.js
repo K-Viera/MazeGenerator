@@ -1,7 +1,8 @@
-let maze = document.querySelector(".maze");
+let maze = document.querySelector(".prueba");
 let ctx = maze.getContext("2d");
 
 let current;
+let generationComplete = false;
 
 class Maze {
     constructor(size, rows, columns) {
@@ -55,17 +56,17 @@ class Maze {
 
         // If no more items in the stack then all cells have been visted and the function can be exited
         if (this.stack.length === 0) {
-            // generationComplete = true;
+            generationComplete = true;
             return;
         }
-
+        this.draw();
         // window.requestAnimationFrame(() => {
         //     this.draw();
         // });
-        setTimeout(() => {
-            this.draw();
-            console.log(100 / Math.pow(this.columns, this.columns));
-        }, 100/Math.pow(this.columns,this.columns));
+        // setTimeout(() => {
+        //     this.draw();
+        //     console.log(100 / Math.pow(this.columns, this.columns));
+        // }, 100/Math.pow(this.columns,this.columns));
     }
 }
 
