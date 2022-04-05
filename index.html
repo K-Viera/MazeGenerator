@@ -13,6 +13,9 @@
         var modoJuego = false;
         //capas
         var autoLayer;
+        var cajaLayer;
+        var caja1Layer;
+        var caja2Layer;
 
         //Posicion Inicial
         var autoAngulo0 =0;
@@ -20,16 +23,49 @@
 
         //Variables Auto
         var auto;
-        var chasis;
+        var chasis1;
+        var chasis2;
+        var base1;
+        var base2;
+        var helise00;
+        var helise01;
+        var helise10;
+        var helise11;
+        var helise20;
+        var helise21;
+        var helise30;
+        var helise31;
+
+        //Variables Cajas
+        var caja;
+        var caja1;
+        var caja2;
 
         //Movimiento
-        var newX = 0;
         var newY = 0;
+        var newX = 0;
+        var posX = 0;
+        var posY = 0;
+        var sep = 0;
+
+        var aleatorioX = 0;
+        var aleatorioX2 = 0;
+        var aleatorioX3 = 0;
+        var aleatorioY = 0;
+        var aleatorioY2 = 0;
+        var aleatorioY3 = 0;
+        
 
         window.onload = function () {
+            let canvas = document.querySelector('.maze')
+            canvas.width = maze.size*1.1;
+            canvas.height = maze.size*1.1;
             paper.setup('maze');
             // Inicializar las capas
             autoLayer = new Layer();
+            cajaLayer = new Layer();
+            caja1Layer = new Layer();
+            caja2Layer = new Layer();
 
             // A la capa de pista le incluye el objeto pista
             var tool = new Tool();
@@ -47,19 +83,27 @@
                 event.preventDefault();
                 // Se mueve una casilla hacia arriba
                 if (event.key == 'up') {
-                    newY = -40;
+                    if(!newMaze.grid[posY][posX].walls.topWall){
+                        newY = -sep;
+                    }
                 };
                 // Se mueve una casilla hacia abajo
                 if (event.key == 'down') {
-                    newY = 40;
+                    if(!newMaze.grid[posY][posX].walls.bottomWall){
+                        newY = sep;
+                    }
                 };
                 // Se mueve una casilla hacia la izquierda
                 if (event.key == 'left') {
-                    newX = -40;
+                    if(!newMaze.grid[posY][posX].walls.leftWall){
+                        newX = -sep;
+                    }
                 };
                 // Se mueve una casilla hacia la derecha
                 if (event.key == 'right') {
-                    newX = 40;
+                    if(!newMaze.grid[posY][posX].walls.rightWall){
+                        newX = sep;
+                    }
                 };
             };
 
@@ -67,15 +111,49 @@
             view.onFrame = function (event) {
                 if (modoJuego) {
                     if (auto != null) {
-                        // Se actualiza la ubicacion del auto, segun la velocidad
-                        console.log(auto.position.x)
-                        var xp = auto.position.x + newX;
+                        helise00.rotate(10)
+                        helise01.rotate(10)
+                        helise10.rotate(10)
+                        helise11.rotate(10)
+                        helise20.rotate(10)
+                        helise21.rotate(10)
+                        helise30.rotate(10)
+                        helise31.rotate(10)
+                        sep = newMaze.size/newMaze.rows;
                         var yp = auto.position.y + newY;
+                        var xp = auto.position.x + newX;
                         newX = 0;
                         newY = 0;
                         auto.position.x = Math.max(0, Math.min(xp, view.size.width));
                         auto.position.y = Math.max(0, Math.min(yp, view.size.height));
-
+                        posX = Math.round((auto.position.x - sep/2)/sep);
+                        posY = Math.round((auto.position.y - sep/2)/sep);
+                        // console.log(auto.position.x)
+                        // console.log(auto.position.y)
+                        var hitResultCaja1 = caja1Layer.hitTest(auto.position);
+                        if(hitResultCaja1){
+                            if(hitResultCaja1.item.flag == null){
+                                hitResultCaja1.item.flag = true;
+                                caja1Layer.remove();
+                                console.log("Caja1");
+                            }
+                        }
+                        var hitResultCaja = cajaLayer.hitTest(auto.position);
+                        if(hitResultCaja){
+                            if(hitResultCaja.item.flag == null){
+                                hitResultCaja.item.flag = true;
+                                cajaLayer.remove();
+                                console.log("Caja")
+                            }
+                        }
+                        // var hitResultCaja2 = caja2Layer.hitTest(auto.position);
+                        // if(hitResultCaja2){
+                        //     if(hitResultCaja2.item.flag == null){
+                        //         hitResultCaja2.item.flag = true;
+                        //         caja2Layer.remove();
+                        //         console.log("Caja2");
+                        //     }
+                        // }
                     };
                 };
             }
@@ -87,29 +165,167 @@
             pix=0
             piy=0
             sizeX = maze.size / maze.columns
-            sizeY = maze.size / maze.columns
+            sizeY = maze.size / maze.rows
             autoLayer.clear();
             auto = new Group();
 
-            chasis = new Path.Rectangle(new Point(pix, piy), new Size(sizeX/2, sizeY/2));
-            chasis.style = {
+            base1 = new Path.Rectangle(new Point(pix+sizeX/6,piy+sizeY/6), new Size(sizeX/15,sizeY/2))
+            base1.style = {
+                fillColor: 'black',
+                strokeColor: 'black'
+            };
+            auto.addChild(base1);
+            base2 = new Path.Rectangle(new Point(pix-sizeX/8,piy+sizeY/6), new Size(sizeX/15,sizeY/2))
+            base2.style = {
+                fillColor: 'black',
+                strokeColor: 'black'
+            };
+            auto.addChild(base2);
+            chasis1 = new Path.Rectangle(new Point(pix, piy), new Size(sizeX/8, sizeY/1.2));
+            chasis1.style = {
                 fillColor: 'red',
                 strokeColor: 'black'
             };
-            auto.addChild(chasis);
-            autoLayer.addChild(auto);
+            chasis1.rotate(45)
+            auto.addChild(chasis1);
+            chasis2 = new Path.Rectangle(new Point(pix, piy), new Size(sizeX/8, sizeY/1.2));
+            chasis2.style = {
+                fillColor: 'red',
+                strokeColor: 'black'
+            };
+            chasis2.rotate(-45);
+            auto.addChild(chasis2);
 
-            angulo = (autoAngulo0 + 360) * (Math.PI / 180);
-            //auto.rotate(autoAngulo0 + 180);
+            helise00 = new Path.Rectangle(new Point(pix-sizeX/5,piy+sizeY/40), new Size(sizeX/30,sizeY/3));
+            helise00.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            auto.addChild(helise00);
+            helise01 = new Path.Rectangle(new Point(pix-sizeX/5,piy+sizeY/40), new Size(sizeX/30,sizeY/3));
+            helise01.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            helise01.rotate(90)
+            auto.addChild(helise01);
+
+            helise10 = new Path.Rectangle(new Point(pix-sizeX/5,piy+sizeY/2), new Size(sizeX/30,sizeY/3));
+            helise10.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            auto.addChild(helise10);
+            helise11 = new Path.Rectangle(new Point(pix-sizeX/5,piy+sizeY/2), new Size(sizeX/30,sizeY/3));
+            helise11.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            helise11.rotate(90)
+            auto.addChild(helise11);
+
+            helise20 = new Path.Rectangle(new Point(pix+sizeX/3.5,piy+sizeY/40), new Size(sizeX/30,sizeY/3));
+            helise20.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            auto.addChild(helise20);
+            helise21 = new Path.Rectangle(new Point(pix+sizeX/3.5,piy+sizeY/40), new Size(sizeX/30,sizeY/3));
+            helise21.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            helise21.rotate(90)
+            auto.addChild(helise21);
+
+            helise30 = new Path.Rectangle(new Point(pix+sizeX/3.5,piy+sizeY/2), new Size(sizeX/30,sizeY/3));
+            helise30.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            auto.addChild(helise30);
+            helise31 = new Path.Rectangle(new Point(pix+sizeX/3.5,piy+sizeY/2), new Size(sizeX/30,sizeY/3));
+            helise31.style = {
+                fillColor: 'white',
+                strokeColor: 'black'
+            };
+            helise31.rotate(90)
+            auto.addChild(helise31);
+
+            autoLayer.addChild(auto);
 
             auto.position = new Point(sizeX/2, sizeY/2);;
 
         }
 
+        //Metodo para crear las cajas
+        function crearCaja(maze){
+            pix=0
+            piy=0
+            sizeX = maze.size / maze.columns
+            sizeY = maze.size / maze.rows
+            cajaLayer.clear();
+            caja = new Group();
+            let base = new Path.Rectangle(new Point(pix,piy), new Size(sizeX/1.5,sizeY/2))
+            base.style = {
+                fillColor: 'brown',
+                strokeColor: 'black'
+            };
+            caja.addChild(base);
+            cajaLayer.addChild(caja);
+            aleatorioX = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
+            aleatorioY = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
+            caja.position = new Point(sizeX/2+aleatorioX*sizeX,sizeY/2+aleatorioY*sizeY); 
+        }
+        function crearCaja1(maze){
+            pix=0
+            piy=0
+            sizeX = maze.size / maze.columns
+            sizeY = maze.size / maze.rows
+            caja1Layer.clear();
+            caja1 = new Group();
+            let base1 = new Path.Rectangle(new Point(pix,piy), new Size(sizeX/1.5,sizeY/2))
+            base1.style = {
+                fillColor: 'brown',
+                strokeColor: 'black'
+            };
+            caja1.addChild(base1);
+            caja1Layer.addChild(caja1);
+            aleatorioX1 = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
+            aleatorioY1 = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
+            while( (aleatorioX1 == aleatorioX && aleatorioY1 == aleatorioY)){
+                aleatorioX2 = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
+                aleatorioY2 = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
+            }
+            console.log(aleatorioX1);
+            caja1.position = new Point(sizeX/2+aleatorioX1*sizeX,sizeY/2+aleatorioY1*sizeY);            
+        }
+
+        // function crearCaja2(maze){
+        //     pix=0
+        //     piy=0
+        //     sizeX = maze.size / maze.columns
+        //     sizeY = maze.size / maze.rows
+        //     caja2Layer.clear();
+        //     caja2 = new Group();
+        //     let base2 = new Path.Rectangle(new Point(pix,piy), new Size(sizeX/1.5,sizeY/2))
+        //     base2.style = {
+        //         fillColor: 'blue',
+        //         strokeColor: 'black'
+        //     };
+        //     caja2.addChild(base2);
+        //     caja2Layer.addChild(caja2);
+        //     aleatorioX2 = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
+        //     aleatorioY2 = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
+        //     // while( (aleatorioX2 == aleatorioX && aleatorioY2 == aleatorioY)||(aleatorioX2 == aleatorioX1 && aleatorioY2 == aleatorioY1)){
+        //     //     aleatorioX2 = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
+        //     //     aleatorioY2 = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
+        //     // }
+        //     console.log(aleatorioX2);
+        //     caja2.position = new Point(sizeX/2+aleatorioX2*sizeX,sizeY/2+aleatorioY2*sizeY);
+        // }
+
         function drawMaze(maze){
-            let canvas = document.querySelector('.maze')
-            canvas.width = maze.size;
-            canvas.height = maze.size;
             // console.log("DrawMAze: ",maze.grid)
             for (let r = 0; r < maze.rows; r++) {
                 for (let c = 0; c < maze.columns; c++) {
@@ -163,14 +379,17 @@
 
         function jugar(){
             modoJuego = true;
-            startMaze()
-            crearAuto(newMaze)
-            drawMaze(newMaze)
+            startMaze();
+            crearAuto(newMaze);
+            crearCaja(newMaze);
+            crearCaja1(newMaze);
+            // crearCaja2(newMaze);
+            drawMaze(newMaze);
         }
 
         let newMaze;
         function startMaze() {
-            var canvasSize = 800;
+            var canvasSize = 600;
             var mazeSize = document.getElementById('mazeSize').value;
             //console.log(mazeSize)
             if (!newMaze) {
@@ -186,7 +405,7 @@
 <body style="background-image: url('img/bg.jpg');">
     <label>Set maze size</label>
     <input type="number" value="10" min="0" id="mazeSize"></input>
-    <button onclick="jugar()">Start Maze</button>
+    <button onclick="window.location.reload()">Start Maze</button>
     <div style="text-align: center; padding-top: 1cm;">
         <canvas class="maze" id="maze" resize>
         </canvas>
