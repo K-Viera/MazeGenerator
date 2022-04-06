@@ -55,6 +55,9 @@
         var aleatorioY2 = 0;
         var aleatorioY3 = 0;
         
+        //Condicion Final
+        var Fcaja1 = false;
+        var Fcaja2 = false;
 
         window.onload = function () {
             let canvas = document.querySelector('.maze')
@@ -136,6 +139,7 @@
                                 hitResultCaja1.item.flag = true;
                                 caja1Layer.remove();
                                 console.log("Caja1");
+                                Fcaja1 = true;
                             }
                         }
                         var hitResultCaja = cajaLayer.hitTest(auto.position);
@@ -144,16 +148,14 @@
                                 hitResultCaja.item.flag = true;
                                 cajaLayer.remove();
                                 console.log("Caja")
+                                Fcaja2 = true;
                             }
                         }
-                        // var hitResultCaja2 = caja2Layer.hitTest(auto.position);
-                        // if(hitResultCaja2){
-                        //     if(hitResultCaja2.item.flag == null){
-                        //         hitResultCaja2.item.flag = true;
-                        //         caja2Layer.remove();
-                        //         console.log("Caja2");
-                        //     }
-                        // }
+                        if(Fcaja1&&Fcaja2){
+                            alert("Has terminado, unde Start Maze para Reiniciar");
+                            Fcaja1=false;
+                            Fcaja2=false;
+                        }
                     };
                 };
             }
@@ -293,9 +295,12 @@
             caja1Layer.addChild(caja1);
             aleatorioX1 = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
             aleatorioY1 = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
-            while( (aleatorioX1 == aleatorioX && aleatorioY1 == aleatorioY)){
+            difX = Math.abs(aleatorioX1 - aleatorioX);
+            console.log("dif"+difX+"mazesize"+maze.columns/2)
+            while( (aleatorioX1 == aleatorioX && aleatorioY1 == aleatorioY && difX >= maze.columns/2)){
                 aleatorioX2 = parseInt((Math.random()*(maze.size+1)-sizeX/2)/sizeX);
                 aleatorioY2 = parseInt((Math.random()*(maze.size+1)-sizeY/2)/sizeY);
+                difX = Math.abs(aleatorioX1 - aleatorioX);
             }
             console.log(aleatorioX1);
             caja1.position = new Point(sizeX/2+aleatorioX1*sizeX,sizeY/2+aleatorioY1*sizeY);            
