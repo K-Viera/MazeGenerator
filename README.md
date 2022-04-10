@@ -3,7 +3,7 @@
 1.  Descargar la aplicacio en una carpeta que tengo acceso de administrador, o en su defecto en algun servidor de aplicaciones web que tome por defecto el index.html.
 2.  Abrir el archivo index.html.
 3.  Se abrira una página como la siguiente en la cual nos apareceran 2 objetos importantes.
-    - El imput *set maze size* el cual nos permite ingresar el tamaño con el cual queremos construir nuestro laberinto.
+    - El input *set maze size* el cual nos permite ingresar el tamaño con el cual queremos construir nuestro laberinto.
     - El laberindo como tal el cuals se encuentra en la mitad de la pantalla con un tamaño de 800 * 800 pixeles y nos permite movernos libremente a traves del tablero.
 4. El movimiento del dron o el personaje jugable dentro de nuestro laberinto es jugable con las flechas del taclado.
 
